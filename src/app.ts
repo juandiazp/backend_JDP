@@ -3,6 +3,7 @@ import morgan from 'morgan';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import authRoutes from './routes/authRoutes';
+import usuarioRoutes from './routes/usuarioRoutes';
 
 /*
 * Clase de inicio de aplicación NodeJSExpres
@@ -43,6 +44,7 @@ class Server {
   //Configuración de rutas
   routes(){
     this.app.use("/",authRoutes);
+    this.app.use('/usuario', usuarioRoutes)
   }
 }
 

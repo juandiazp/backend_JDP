@@ -8,15 +8,40 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authController = void 0;
+const validator_1 = __importDefault(require("validator"));
+const authModelo_1 = __importDefault(require("../models/authModelo"));
 class AuthController {
+    /**
+    * Método para valida Inicio de sesión
+    * @param req Petición
+    * @param res respuesta
+    * @returns
+    */
     iniciarSesion(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { email, password } = req.body;
-            return res.json({ message: "Autenticación correcta",
-                email: email,
-                password: password });
+            try {
+                const { email, password } = req.body;
+                // verificar que los datos no esten vacios
+                if (validator_1.default.isEmpty(email.trim()) ||
+                    validator_1.default.isEmpty(password.trim())) {
+                    return res
+                        .status(400)
+                        .json({ message: "Los campos son requeridos", code: 1 });
+                }
+                const lstUsers = yield authModelo_1.default.getuserByEmail(email);
+                if (lstUsers.length <= 0) {
+                    return res.status(404).json({ message: "El usuario y/o contraseña es incorrecto", code: 1 });
+                }
+                return res.json({ message: "Autenticación correcta", code: 0 });
+            }
+            catch (error) {
+                return res.status(500).json({ message: `${error.message}` });
+            }
         });
     }
 }
